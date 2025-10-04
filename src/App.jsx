@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import initialTodos from "./data/todo.json";
 import { TodoList } from "./components/TodoList/TodoList";
 import { TodoEditor } from "./components/TodoEditor/TodoEditor";
@@ -10,68 +10,74 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/Theme";
 import { Section, Sidebar } from "./AppStyled";
 import { Author } from "./components/Author/Author";
+import { setItem } from "./services/setItem";
+import { getItem } from "./services/getItem";
 
-class App extends Component {
-  state = {
-    todos: initialTodos,
-    filter: "",
-  };
+const App = () => {
+  const [todos, setTodos] = useState(
+    getItem("todos") ? getItem("todos") : initialTodos
+  );
+  const [filter, setFilter] = useState("");
 
-  changeState = (e) => {
+  useEffect(() => {
+    if (!Object.keys(localStorage).includes("todos")) {
+      setItem("todos", []);
+    }
+    setTodos(getItem("todos"));
+  }, []);
+
+  useEffect(() => {
+    setItem("todos", todos);
+  }, [todos]);
+
+  const changeState = (e) => {
     if (e.target.dataset.action === "checkbox") {
       const myItem = e.target.parentElement.parentElement;
-      const array = [...this.state.todos];
+      const array = [...todos];
       array[
         array.indexOf(array.find((item) => item.id === myItem.id))
       ].completed = e.target.checked;
-      this.setState({ todos: array });
+      setTodos(array);
     } else if (e.target.dataset.action === "delete") {
       const myItem = e.target.parentElement;
-      const array = [...this.state.todos];
+      const array = [...todos];
       array.splice(
         array.indexOf(array.find((item) => item.id === myItem.id)),
         1
       );
-      this.setState({ todos: array });
+      setTodos(array);
     }
   };
 
-  addTask = (e) => {
-    e.preventDefault();
-    const array = [...this.state.todos];
+  const addTask = (value) => {
+    const array = [...todos];
     array.unshift({
       id: `id-${nanoid(8)}`,
-      text: e.target.elements.text.value,
+      text: value,
       completed: false,
     });
-    this.setState({ todos: array });
+    setTodos(array);
   };
 
-  filterTasks = (e) => {
+  const filterTasks = (e) => {
     e.preventDefault();
-    this.setState({ filter: e.target.elements.text.value });
+    setFilter(e.target.elements.text.value);
   };
 
-  render() {
-    return (
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        <Section>
-          <Sidebar>
-            <TodoEditor addTask={this.addTask} />
-            <Filter filterTasks={this.filterTasks} />
-            <Info todos={this.state.todos} />
-            <Author />
-          </Sidebar>
-          <TodoList
-            filter={this.state.filter}
-            changeState={this.changeState}
-            todos={this.state.todos}
-          />
-        </Section>
-      </ThemeProvider>
-    );
-  }
-}
+  return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <Section>
+        <Sidebar>
+          <TodoEditor addTask={addTask} />
+          <Filter filterTasks={filterTasks} />
+          <Info todos={todos} />
+          <Author />
+        </Sidebar>
+        <TodoList filter={filter} changeState={changeState} todos={todos} />
+      </Section>
+    </ThemeProvider>
+  );
+};
 
 export default App;

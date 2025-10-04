@@ -1,46 +1,42 @@
-import { Component } from "react";
 import { FaPlus } from "react-icons/fa6";
-
 import { Button, Div, Form, Input, Title } from "./TodoEditorStyled";
+import { useState } from "react";
 
-export class TodoEditor extends Component {
-  state = {
-    value: "",
+export const TodoEditor = ({ addTask }) => {
+  const [value, setValue] = useState("");
+
+  const onInput = (e) => {
+    setValue(e.target.value);
   };
 
-  onInput = (e) => {
-    this.setState({ value: e.target.value });
+  const onSubmit = (e) => {
+    e.preventDefault();
+    console.log(addTask(e.target.elements.text.value));
+    setValue("");
   };
 
-  onSubmit = (e) => {
-    this.props.addTask(e);
-    this.setState({ value: "" });
-  };
-
-  render() {
-    return (
-      <Div>
-        <Title>Add</Title>
-        <Form onSubmit={this.onSubmit}>
-          <label>
-            <Input
-              required
-              value={this.state.value}
-              onInput={this.onInput}
-              type="text"
-              name="text"
-              placeholder="Make a todo task..."
-            />
-          </label>
-          <Button type="submit">
-            <FaPlus
-              size="16px"
-              fill="#1c1c1c"
-              style={{ pointerEvents: "none" }}
-            />
-          </Button>
-        </Form>
-      </Div>
-    );
-  }
-}
+  return (
+    <Div>
+      <Title>Add</Title>
+      <Form onSubmit={onSubmit}>
+        <label>
+          <Input
+            required
+            value={value}
+            onInput={onInput}
+            type="text"
+            name="text"
+            placeholder="Make a todo task..."
+          />
+        </label>
+        <Button type="submit">
+          <FaPlus
+            size="16px"
+            fill="#1c1c1c"
+            style={{ pointerEvents: "none" }}
+          />
+        </Button>
+      </Form>
+    </Div>
+  );
+};
