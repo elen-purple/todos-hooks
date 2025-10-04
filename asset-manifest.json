@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/todo-practise/static/js/main.b292434e.js",
+    "index.html": "/todo-practise/index.html",
+    "main.b292434e.js.map": "/todo-practise/static/js/main.b292434e.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.b292434e.js"
+  ]
+}
